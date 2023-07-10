@@ -1,0 +1,17 @@
+# load_dataset_v5.py 실행시 자동 생성
+names:
+- AC
+- Window-blind
+- lamp
+- laptop
+nc: 4
+roboflow:
+  license: CC BY 4.0
+  project: final-project-dataset-keqzz
+  url: https://universe.roboflow.com/final-projectboostcamp-ai-tech/final-project-dataset-keqzz/dataset/6
+  version: 6
+  workspace: final-projectboostcamp-ai-tech
+test: ../test/images
+train: /opt/ml/yolov5/datasets/final-project-dataset-6/train/images
+val: /opt/ml/yolov5/datasets/final-project-dataset-6/valid/images
+# train, val 경로 사용자에 맞게 변경
