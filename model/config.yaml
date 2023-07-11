@@ -1,0 +1,2 @@
+dataset_version: 12  # roboflow에서 가져올 데이터셋 버전 설정
+model: yolov8s.pt
