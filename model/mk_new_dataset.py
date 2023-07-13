@@ -63,15 +63,15 @@ for bg in bg_images:
         # bg에 붙이기
         xmin = randint(0, bw - rw)
         ymin = randint(0, bh - rh)
-        xcen = xmin + rw / 2
-        ycen = ymin + rh / 2
+        xmax = xmin + rw 
+        ymax = ymin + rh
         bg_user_img = copy.deepcopy(bg_img)
         bg_user_img.paste(uimg, (xmin, ymin), True)  # xmin, ymin 좌표에 resize된 uimg 붙임
 
         # label.txt 저장
         if not os.path.exists(label_path):
             os.mkdir(label_path)
-        label = f"{class_name} {xcen/bw} {ycen/bh} {rw/bw} {rh/bh}"
+        label = f"{class_name} {xmin/bw} {ymin/bh} {xmax/bw} {ymax/bh}"
         file = open(f"{label_path}/{str(cnt)}.txt", "w")
         file.write(label)
         file.close()
