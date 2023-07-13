@@ -5,9 +5,7 @@ from PIL import Image
 from rembg import remove
 
 
-def remove_bg():
-    uimg_path = "사용자로 부터 받은 사진 디렉터리 경로"
-    rembg_path = "./rembg_images/"
+def remove_bg(uimg_path, rembg_path):  # 사용자가 추가한 물체 이미지 디렉터리 경로 입력받음
     if not os.path.exists(rembg_path):
         os.mkdir(rembg_path)
 
@@ -20,71 +18,88 @@ def remove_bg():
         out.save(rembg_path + str(i) + ".png")
 
 
-# remove_bg
+def paste_image(class_name, bg_path, bg_images, uimg_path, user_images, image_path, label_path, removed):
+    cnt = 0  # 저장할 이미지 이름
 
-k = 0  # 0: 배경 o  1: 배경 x
+    # resize를 진행할때 특정 ratio(r)를 곱해서 변형
+    for bg in bg_images:
+        bg_img = Image.open(bg_path + bg)  # image open
+        bg_img = bg_img.resize((640, 640))
+        bw, bh = bg_img.size
 
-# 사용자로부터 받은 이미지 4장
-if k == 0:
-    user_images = os.listdir("물체 사진 디렉터리 경로")
-elif k == 1:
-    user_images = os.listdir("배경이 제거된 물체 사진 디렉터리 경로")
+        for user in user_images:
+            uimg = Image.open(uimg_path + user)
 
-# 배경으로 사용할 이미지 (약 30장)
-bg_images = os.listdir("배경사진이 있는 디렉터리 경로")
+            w, h = uimg.size
+            e = 1e-2
+            m = min(bw / w, bh / h)
+            r = uniform(e, m / 2)
+            rw, rh = int(r * w), int(r * h)
+            uimg = uimg.resize((rw, rh))  # resize 적용
+
+            # bg에 붙이기
+            xmin = randint(0, bw - rw)
+            ymin = randint(0, bh - rh)
+            xmax = xmin + rw
+            ymax = ymin + rh
+            bg_user_img = copy.deepcopy(bg_img)
+            if not removed:
+                bg_user_img.paste(uimg, (xmin, ymin))  # xmin, ymin 좌표에 resize된 uimg 붙임
+            if removed:
+                bg_user_img.paste(uimg, (xmin, ymin), uimg)
+
+            # label.txt 저장
+            if not os.path.exists(label_path):
+                os.mkdir(label_path)
+            label = f"{class_name} {xmin/bw} {ymin/bh} {xmax/bw} {ymax/bh}"
+            file = open(f"{label_path}/{str(cnt)}.txt", "w")
+            file.write(label)
+            file.close()
+
+            # image 저장
+            if not os.path.exists(image_path):
+                os.mkdir(f"{image_path}")
+            if not removed:
+                bg_user_img.save(image_path + "/" + str(cnt) + ".jpg")
+                print(f"{cnt}.jpg, {cnt}.txt 저장 완료")
+            elif removed:
+                bg_user_img.save(image_path + str(cnt) + ".png")  # 배경제거 이미지 사용 시
+                print(f"{cnt}.png, {cnt}.txt 저장 완료")
+
+            cnt += 1
 
 
-path = "./new_dataset"  # 현재 경로에 new_dataset 디렉터리 추가
-if not os.path.exists(path):
-    os.mkdir(path)
+def main(removed):
+    # 사용자가 추가한 클래스 이름
+    class_name = "mouse"
 
-img_path = f"{path}/bg_user_images"  # 새로운 이미지 저장할 디렉토리
-label_path = f"{path}/bg_user_labels"  # 새로운 레이블 저장할 디렉토리
-cnt = 0  # 저장할 이미지 이름
-class_name = "mouse"  # 사용자가 추가한 클래스 이름
+    # path 정리
+    paths = "./new_dataset"  # 현재 경로에 new_dataset 디렉터리 추가
+    if not os.path.exists(paths):
+        os.mkdir(paths)
 
-# resize를 진행할때 특정 ratio(r)를 곱해서 변형
-for bg in bg_images:
-    bg_img = Image.open(path + "/bg_images/" + bg)  # image open
-    bg_img = bg_img.resize((640, 640))
-    bw, bh = bg.size
-    for user in user_images:
-        if k == 0:
-            uimg = Image.open(path + "/user_images/" + user)
-        elif k == 1:
-            uimg = Image.open(path + "/rembg_images/" + user)  # 배경제거 이미지 사용 시
-        w, h = uimg.size  # user image size 전체 동일할 경우 고정
-        e = 1e-2
-        m = min(bw / w, bh / h)
-        r = uniform(e, m / 2)
-        rw, rh = int(r * w), int(r * h)
-        uimg = uimg.resize((rw, rh))  # resize 적용
+    uimg_path = paths + "/user_images/"  # 사용자 물체 이미지 저장 경로
+    rembg_path = paths + "/rembg_images/"  # uimg에서 배경 제거한 이미지 저장 경로
+    bg_path = paths + "/bg_images/"  # 배경이미지 저장 경로
 
-        # bg에 붙이기
-        xmin = randint(0, bw - rw)
-        ymin = randint(0, bh - rh)
-        xmax = xmin + rw 
-        ymax = ymin + rh
-        bg_user_img = copy.deepcopy(bg_img)
-        bg_user_img.paste(uimg, (xmin, ymin), True)  # xmin, ymin 좌표에 resize된 uimg 붙임
+    image_path = paths + "/bg_user_images/"  # 새로운 이미지 저장할 디렉토리
+    label_path = paths + "/bg_user_labels/"  # 새로운 레이블 저장할 디렉토리
+    rem_image_path = paths + "/rembg_user_images/"  # 새로운 이미지 저장할 디렉토리
+    rem_label_path = paths + "/rembg_user_labels/"  # 새로운 레이블 저장할 디렉토리
 
-        # label.txt 저장
-        if not os.path.exists(label_path):
-            os.mkdir(label_path)
-        label = f"{class_name} {xmin/bw} {ymin/bh} {xmax/bw} {ymax/bh}"
-        file = open(f"{label_path}/{str(cnt)}.txt", "w")
-        file.write(label)
-        file.close()
+    # 배경으로 사용할 이미지 (약 30장)
+    bg_images = os.listdir(bg_path)  # 배경사진이 있는 디렉터리 경로로 변경
 
-        # image.jpg 저장
-        if not os.path.exists(img_path):
-            os.mkdir(f"{img_path}")
+    # 사용자로부터 받은 이미지 4장
+    if not removed:
+        user_images = os.listdir(uimg_path)
+        paste_image(class_name, bg_path, bg_images, uimg_path, user_images, image_path, label_path, removed)
+    elif removed:
+        remove_bg(uimg_path, rembg_path)
+        user_images = os.listdir(rembg_path)
+        paste_image(class_name, bg_path, bg_images, rembg_path, user_images, rem_image_path, rem_label_path, removed)
 
-        if k == 0:
-            bg_user_img.save(img_path + "/" + str(cnt) + ".jpg")
-            print(f"{cnt}.jpg, {cnt}.txt 저장 완료")
-        elif k == 1:
-            bg_user_img.save(img_path + "/" + str(cnt) + ".png")  # 배경제거 이미지 사용 시
-            print(f"{cnt}.png, {cnt}.txt 저장 완료")
 
-        cnt += 1
+if __name__ == "__main__":
+    removed = True  # False # False: 물체 배경유지  True: 물체 배경제거
+    main(removed)
