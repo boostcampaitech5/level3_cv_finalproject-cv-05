@@ -2,6 +2,9 @@ from ultralytics import YOLO
 from argparse import ArgumentParser
 from load_dataset import roboflow_dataset
 import yaml
+import upload
+import generate_dataset
+from roboflow import Roboflow
 
 def load_config(file_path):
     with open(file_path, 'r') as f:
@@ -21,17 +24,27 @@ def parse_args():
     return args
 
 config_path = 'config.yaml'
+secret_path = 'secret.yaml'
 config = load_config(config_path)
+secret = load_config(secret_path)
+
 current_version = config.get('dataset_version')
 args = parse_args()
+
+# project 불러오기
+rf = Roboflow(api_key=secret['api_key'])
+project = rf.workspace(config['workspace']).project(config['project'])
+
 
 if args.update:
     current_version += 1
     config['dataset_version'] = current_version
+    upload.upload_data(config, project)
+    generate_dataset.generate_dataset(project)
     save_config(config, config_path)
 
 # dataset
-dataset = roboflow_dataset(current_version)
+dataset = roboflow_dataset(config['dataset_version'], project)
 dataset = dataset.load_dataset()
 
 #train
