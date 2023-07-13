@@ -1,15 +1,8 @@
-"""
-search_term: 개체 클래스 명
-공백을 제거하고 사이에 +를 추가     Ex) search_term Samsung+TV
-number_of_images: 해당 개체 클래스에서 원하는 이미지 수
-starting_number: 인덱싱은 이전에 다운로드한 이미지를 덮어쓰지 않아야 함
-이전에 스크랩한 데이터에 추가할 starting_number를 설정 가능
-"""
-
 import time
 import os
 from selenium import webdriver
 import bs4
+import yaml
 import requests
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -18,10 +11,16 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 
-# creating a directory to save images
-folder_name = "../images"  # "../2_Data_Annotation/images"
-if not os.path.isdir(folder_name):
-    os.makedirs(folder_name)
+
+def load_config(yaml_path):
+    with open(yaml_path, "r") as f:
+        config = yaml.safe_load(f)
+    return config
+
+
+def save_config(config, yaml_path):
+    with open(yaml_path, "w") as f:
+        yaml.dump(config, f, default_flow_style=False)
 
 
 def download_image(url, folder_name, num):
@@ -32,12 +31,7 @@ def download_image(url, folder_name, num):
             file.write(response.content)
 
 
-chrome_options = Options()
-chrome_options.add_argument("--window-size=1920,1200")
-driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-
-
-def scrape_images(search_term, number_of_images, starting_number):
+def scrape_images(driver, folder_name, search_term, number_of_images, starting_number):
     SEARCH_URL = f"https://www.google.com/search?q={search_term}&source=lnms&tbm=isch"
     driver.get(SEARCH_URL)
 
@@ -55,7 +49,7 @@ def scrape_images(search_term, number_of_images, starting_number):
 
     # driver.find_element(By.XPATH, """//*[@id="islrg"]/div[1]/div[1]""").click()  # 첫번째 검색결과 이미지 클릭
     count = starting_number
-    end = count + number_of_images + 1
+    end = count + number_of_images
     for i in range(1, len_containers):
         if i % 25 == 0 or count == end:  # i % 25 == 0 >>> 25번째는 왜?
             continue
@@ -115,11 +109,33 @@ def scrape_images(search_term, number_of_images, starting_number):
                 print("Couldn't download an image %s, continuing downloading the next one" % (i))
 
 
-# scrape_images("검색어","찾을 개수","시작 인덱스")
-scrape_images("magicmouse+A1657", 100, 0)
+def main(class_name, model_name):
+    # creating a directory to save images
+    paths = "./new_dataset"
+    if not os.path.isdir(paths):
+        os.makedirs(paths)
+    folder_name = paths + "/user_images"
+    if not os.path.isdir(folder_name):
+        os.makedirs(folder_name)
 
-# scrape_images("fan", 100, 100)
-# scrape_images("microwave",100,200)
+    chrome_options = Options()
+    chrome_options.add_argument("--window-size=1920,1200")
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
-time.sleep(10)
-driver.quit()
+    # scrape_images("검색어","찾을 개수","시작 인덱스")
+    scrape_images(driver, folder_name, class_name + "+" + model_name, 5, 0)
+
+    time.sleep(10)
+    driver.quit()
+
+
+if __name__ == "__main__":
+    class_name = "mouse"
+    model_name = "A1657"
+
+    main(class_name, model_name)
+
+    yaml_path = "./model/config.yaml"  # config 수정
+    config = load_config(yaml_path)
+    config["class_name"] = class_name
+    save_config(config, yaml_path)
