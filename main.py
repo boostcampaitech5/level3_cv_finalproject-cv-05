@@ -19,6 +19,7 @@ CONFIDENCE_THRESHOLD = 0.4
 consine_threshold = 0.9
 GREEN = (0, 255, 0)
 WHITE = (255, 255, 255)
+RED = (0, 0, 255)
 class_list=['AC','Window-blind','lamp','laptop']
 #yolo load model
 model = YOLO('best.pt')
@@ -80,8 +81,8 @@ while True:
 
         xmin, ymin, xmax, ymax = int(data[0]), int(data[1]), int(data[2]), int(data[3])
         label = int(data[5])
-        cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2)
-        cv2.putText(frame, class_list[label]+' '+str(round(confidence, 3)) + '%', (xmin, ymin), cv2.FONT_ITALIC, 1, (255, 255, 255), 2)
+        cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), GREEN, 2)
+        cv2.putText(frame, class_list[label]+' '+str(round(confidence, 3)) + '%', (xmin, ymin), cv2.FONT_ITALIC, 1, WHITE, 2)
         cv2.line(frame,(xmin+int((xmax-xmin)/2),ymin+int((ymax-ymin)/2)),(xmin+int((xmax-xmin)/2),ymin+int((ymax-ymin)/2)), GREEN, 5) # 중심점
         results.append([xmin, ymin, xmax-xmin, ymax-ymin,xmin+int((xmax-xmin)/2),ymin+int((ymax-ymin)/2),confidence, class_list[label],0,0])
         data_df = pd.DataFrame(results, columns=['xmin','ymin','width','height','center_x','center_y','confidence','label','select','status']) 
@@ -122,7 +123,7 @@ cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1600)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1200)
 #select_list=[]
 while True:
-
+    
     ret, frame = cap.read()
     if not ret:
         print('Cam Error')
@@ -132,9 +133,10 @@ while True:
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     result = hands.process(frame)
     frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)#색변환 rgb -> bgr
-    
+    for i in range(len(data_df)):
+        cv2.rectangle(frame, (data_df['xmin'][i], data_df['ymin'][i]), (data_df['xmin'][i]+data_df['width'][i], data_df['ymin'][i]+data_df['height'][i]), RED, 2)
     if result.multi_hand_landmarks is not None:
-        rps_result = []
+        #rps_result = []
 
         for res in result.multi_hand_landmarks:
             joint = np.zeros((21, 3))
@@ -179,7 +181,7 @@ while True:
                     thickness=2,
                 )
 
-                rps_result.append({"rps": rps_gesture[idx], "org": org})
+                #rps_result.append({"rps": rps_gesture[idx], "org": org})
             min_value = 10000
             
             #point 동작일 때
@@ -214,7 +216,8 @@ while True:
     # 선택된 객체의 상태 보여주기        
     if 1 in data_df['select'].values:
         select_index = data_df.index[data_df['select']==1].to_list()
-        cv2.line(frame,(org[0],org[1]),(data_df['center_x'][min_index],data_df['center_y'][min_index]),GREEN,5)
+        cv2.line(frame,(org[0],org[1]),(data_df['center_x'][select_index[0]],data_df['center_y'][select_index[0]]),GREEN,5)
+        cv2.rectangle(frame, (data_df['xmin'][select_index[0]], data_df['ymin'][select_index[0]]), (data_df['xmin'][select_index[0]]+data_df['width'][select_index[0]], data_df['ymin'][select_index[0]]+data_df['height'][select_index[0]]), GREEN, 2)
         cv2.putText(frame, text=data_df['label'][select_index[0]]+' '+off_on[data_df['status'][select_index[0]]],org=(data_df['center_x'][select_index[0]],data_df['center_y'][select_index[0]]),fontFace=cv2.FONT_HERSHEY_SIMPLEX,
                 fontScale=1,
                 color=GREEN,
