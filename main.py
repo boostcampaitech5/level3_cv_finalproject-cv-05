@@ -11,22 +11,48 @@ import pandas as pd
 
 from numpy import dot
 from numpy.linalg import norm
+import math
+import threading
 
 def cos_sim(A, B):
   return dot(A, B)/(norm(A)*norm(B))
+
+def distance(p1, p2):
+    return math.dist((p1[0], p1[1]), (p2[0], p2[1])) 
+
+def control_volume():
+    while True:
+        if hand_shape == 'volume up' and 1 in data_df['select'].values:
+            select_index = data_df.index[data_df['select'] == 1].to_list()
+            if data_df.loc[select_index, 'status'].values[0] == 1:
+                current_volume =  data_df.loc[select_index, 'volume'].values[0]
+                if current_volume < 10:
+                    time.sleep(2)
+                    data_df.loc[select_index, 'volume'] += 1
+                    time.sleep(1000)
+                    
+        time.sleep(10)
+        if hand_shape == 'volume down' and 1 in data_df['select'].values:
+            select_index = data_df.index[data_df['select'] == 1].to_list()
+            if data_df.loc[select_index, 'status'].values[0] == 1:
+                current_volume =  data_df.loc[select_index, 'volume'].values[0]
+                if current_volume > 0:
+                    time.sleep(2)
+                    data_df.loc[select_index, 'volume'] -= 1       
+        time.sleep(10)
 
 CONFIDENCE_THRESHOLD = 0.4
 consine_threshold = 0.9
 GREEN = (0, 255, 0)
 WHITE = (255, 255, 255)
 RED = (0, 0, 255)
+BLACK = (0,0,0)
 class_list=['AC','Window-blind','lamp','laptop']
+
 #yolo load model
 model = YOLO('best.pt')
 off_on = ['off','on']
-#tracker = DeepSort(max_age=50)
-motion_duration = 3
-max_num_hands = 2
+max_num_hands = 1
 gesture = {
     0: "fist",
     1: "point",  # "one"
@@ -40,7 +66,7 @@ gesture = {
     9: "yeah",
     10: "ok",
 }
-rps_gesture = {0:'off',1: "point", 5: "on"}
+rps_gesture = {1: "point", 5: "on/off"}
 
 # MediaPipe hands model
 mp_hands = mp.solutions.hands
@@ -61,8 +87,6 @@ cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1600)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1200)
 
 while True:
-    start = datetime.datetime.now()
-
     ret, frame = cap.read()
     if not ret:
         print('Cam Error')
@@ -84,8 +108,8 @@ while True:
         cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), GREEN, 2)
         cv2.putText(frame, class_list[label]+' '+str(round(confidence, 3)) + '%', (xmin, ymin), cv2.FONT_ITALIC, 1, WHITE, 2)
         cv2.line(frame,(xmin+int((xmax-xmin)/2),ymin+int((ymax-ymin)/2)),(xmin+int((xmax-xmin)/2),ymin+int((ymax-ymin)/2)), GREEN, 5) # 중심점
-        results.append([xmin, ymin, xmax-xmin, ymax-ymin,xmin+int((xmax-xmin)/2),ymin+int((ymax-ymin)/2),confidence, class_list[label],0,0])
-        data_df = pd.DataFrame(results, columns=['xmin','ymin','width','height','center_x','center_y','confidence','label','select','status']) 
+        results.append([xmin, ymin, xmax-xmin, ymax-ymin,xmin+int((xmax-xmin)/2),ymin+int((ymax-ymin)/2),confidence, class_list[label],0,0,0])
+        data_df = pd.DataFrame(results, columns=['xmin','ymin','width','height','center_x','center_y','confidence','label','select','status','volume']) 
         data_df.to_csv('data_df.csv')
     #tracks = tracker.update_tracks(results, frame=frame)
 
