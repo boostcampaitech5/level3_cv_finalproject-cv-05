@@ -21,26 +21,30 @@ def distance(p1, p2):
     return math.dist((p1[0], p1[1]), (p2[0], p2[1])) 
 
 def control_volume():
-    while True:
-        if hand_shape == 'volume up' and 1 in data_df['select'].values:
-            select_index = data_df.index[data_df['select'] == 1].to_list()
-            if data_df.loc[select_index, 'status'].values[0] == 1:
-                current_volume =  data_df.loc[select_index, 'volume'].values[0]
+    if hand_shape == 'volume up' and 1 in data_df['select'].values:
+        select_index = data_df.index[data_df['select'] == 1].to_list()
+        if data_df.loc[select_index, 'status'].values[0] == 1:
+            current_volume = data_df.loc[select_index, 'volume'].values[0]
+            while True:
+                if hand_shape != 'volume up' or result.multi_hand_landmarks is None:
+                    break
+                time.sleep(2)
                 if current_volume < 10:
-                    time.sleep(2)
-                    data_df.loc[select_index, 'volume'] += 1
-                    time.sleep(1000)
-                    
-        time.sleep(10)
-        if hand_shape == 'volume down' and 1 in data_df['select'].values:
-            select_index = data_df.index[data_df['select'] == 1].to_list()
-            if data_df.loc[select_index, 'status'].values[0] == 1:
-                current_volume =  data_df.loc[select_index, 'volume'].values[0]
+                    current_volume += 1
+                data_df.loc[select_index, 'volume'] = current_volume          
+    if hand_shape == 'volume down' and 1 in data_df['select'].values:
+        select_index = data_df.index[data_df['select'] == 1].to_list()
+        if data_df.loc[select_index, 'status'].values[0] == 1:
+            current_volume = data_df.loc[select_index, 'volume'].values[0]
+            while True:
+                if hand_shape != 'volume down' or result.multi_hand_landmarks is None:
+                    break
+                time.sleep(2)
                 if current_volume > 0:
-                    time.sleep(2)
-                    data_df.loc[select_index, 'volume'] -= 1       
-        time.sleep(10)
-
+                    current_volume -= 1
+                data_df.loc[select_index, 'volume'] = current_volume
+                
+            
 CONFIDENCE_THRESHOLD = 0.4
 consine_threshold = 0.9
 GREEN = (0, 255, 0)
@@ -253,11 +257,11 @@ while True:
 
             if idx==5 and 1 in data_df['select'].values:    
                 select_index = data_df.index[data_df['select']==1].to_list()
-                if data_df['status'][select_index[0]]==0:
-                    data_df['status'][select_index[0]]=1
-                elif data_df['status'][select_index[0]]==1:
-                    data_df['status'][select_index[0]]=0
-                data_df['select'][select_index]=0
+                if (data_df.loc[select_index,'status']==0).any():
+                    data_df.loc[select_index,'status']=1
+                elif (data_df.loc[select_index,'status']==1).any():
+                    data_df.loc[select_index,'status']=0
+                data_df.loc[select_index,'select']=0
             thread = threading.Thread(target=control_volume)
             thread.daemon =True
             thread.start()
