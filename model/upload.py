@@ -13,7 +13,8 @@ def upload_data(config, project):
     for extension_type in image_extension_type:
         image_glob.extend(glob.glob(new_image_path + '/*' + extension_type))
     label_glob = glob.glob(new_label_path+'/*'+ label_extension_type)
-
+    image_glob.sort()
+    label_glob.sort()
     new_data = list(zip(image_glob, label_glob))
     random.shuffle(new_data)
     split_index = int(len(new_data) * 0.8) 
