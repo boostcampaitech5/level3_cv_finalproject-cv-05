@@ -126,7 +126,6 @@ def main(class_name, model_name):
         os.makedirs(folder_name)
 
     chrome_options = Options()
-    chrome_options.add_argument("--window-size=1920,1200")    
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('--no-sandbox')
     
