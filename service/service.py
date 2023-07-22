@@ -6,6 +6,12 @@ import cv2
 import numpy as np
 from ultralytics import YOLO
 import pandas as pd
+import subprocess
+
+def load_config(file_path):
+    with open(file_path, 'r') as f:
+        config = yaml.safe_load(f)
+    return config
 
 app = FastAPI()
 
@@ -15,6 +21,30 @@ CONFIDENCE_THRESHOLD = 0.7
 # yolo load model
 model = YOLO("best_latest.pt")
 # 118.67.143.219
+
+@app.websocket("/update")
+async def text_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    await websocket.send_text("WebSocket connection established")
+    while True:
+        data = await websocket.receive_text()
+        if isinstance(data, str) and data.startswith("model"):
+            data = data.split(",")[1]
+            class_name=data.split(" ")[0]
+            model_name=data.split(" ")[1]
+            print(class_name,model_name)
+            subprocess.run(["python","data_collection.py","--class_name",class_name,"--model_name",model_name])
+            subprocess.run(["python","mk_new_dataset.py"])
+            subprocess.run("/opt/ml/final_project/update_train.sh",shell=True)
+            config_path = 'config.yaml'
+            config = load_config(config_path)
+            model_version = config['model_version']
+            if model_version==1:
+                model_version=""
+            else:
+                model_version=str(model_version)
+            print(model_version)
+            await websocket.send_text("Training started.")
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
@@ -123,6 +153,8 @@ async def read_items():
         <button id="startButton" onclick="startWebSocket()">Start WebSocket</button>
         <button id="stopButton" onclick="stopWebSocket()" disabled>Stop WebSocket</button>
         <canvas id="canvas" width="640" height="480"></canvas>
+        <input type="text" id="messageText" autocomplete="off"/>
+        <button onclick="sendText()">Send Text</button>
 
         <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.15.0"></script>
         <script>
@@ -194,6 +226,12 @@ async def read_items():
             canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
             var imageData = canvas.toDataURL("image/png");
             socket.send(imageData);
+        }
+        function sendText() {
+            var text = document.getElementById("messageText").value;
+            if (text.trim()) {  // 텍스트가 비어있지 않은 경우에만 실행
+                var data = "model," + text;
+                nw.send(data);
         }
         </script>
     </body>
