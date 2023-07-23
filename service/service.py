@@ -278,7 +278,12 @@ async def video_endpoint(websocket: WebSocket):
             
             await websocket.send_json(data_to_send)
         else:
-            pass
+            bbox_data = data_df.to_dict("records")
+            
+            # 두 데이터를 딕셔너리로 묶기
+            data_to_send = [bbox_data]
+            await websocket.send_json(data_to_send)
+            
         
 
 @app.websocket("/ud")
@@ -398,7 +403,39 @@ async def read_items():
                 context.fillText(label, canvas.width - xmin - width, ymin - 10);
             }
         }
-                        
+            
+        function displayBBox(bboxData) {
+            var context = canvas.getContext("2d");
+
+            for (var i = 0; i < bboxData.length; i++) {
+                var bbox = bboxData[i];
+                var xmin = bbox.xmin;
+                var ymin = bbox.ymin;
+                var width = bbox.width;
+                var height = bbox.height;
+                var xmax = xmin + width;
+                var ymax = ymin + height;
+                var label = bbox.label;
+                var select = bbox.select;
+                var status = bbox.status;
+                var volume = bbox.volume;
+                
+                // Draw bounding box
+                var boxColor = select === 1 ? "green" : "red";
+                context.beginPath();
+                context.lineWidth = 2;
+                context.strokeStyle = boxColor;
+                context.rect(canvas.width - xmin - width, ymin, width, height);
+                context.stroke();
+
+                // Display class label
+                context.font = "10px Arial";
+                context.fillStyle = boxColor;
+                context.fillText(label + " | status: " + (status === 0 ? "off" : "on") + " | volume: " + volume, canvas.width - xmin - width, ymin - 10);
+
+            }
+        }
+
         function sendImage() {
             canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
             var imageData = canvas.toDataURL("image/png");
@@ -426,11 +463,16 @@ async def read_items():
                         var data = JSON.parse(event.data); // 전체 데이터를 먼저 파싱
                         console.log("data result: ", data);
 
-                        var handData = data[0]; 
-                        var bboxData = data[1];
-                        var idx = data[2]
-                        
-                        displayBBoxLines(bboxData, handData, idx);
+                        if (data.length===3){
+                            var handData = data[0]; 
+                            var bboxData = data[1];
+                            var idx = data[2]
+                            displayBBoxLines(bboxData, handData, idx);
+                        }
+                        else{
+                            var bboxData = data[0];
+                            displayBBox(bboxData);
+                        }
                     } catch (error) {
                         console.error("Error parsing JSON:", error);
                     }
