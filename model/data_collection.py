@@ -10,7 +10,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
-
+from argparse import ArgumentParser
+from selenium.webdriver.chrome.service import Service as ChromiumService
+from webdriver_manager.core.utils import ChromeType
 
 def load_config(yaml_path):
     with open(yaml_path, "r") as f:
@@ -22,7 +24,12 @@ def save_config(config, yaml_path):
     with open(yaml_path, "w") as f:
         yaml.dump(config, f, default_flow_style=False)
 
-
+def parse_args():
+    parser = ArgumentParser()
+    parser.add_argument("--class_name",type=str, default="text")
+    parser.add_argument("--model_name",type=str, default="text")
+    args = parser.parse_args()
+    return args
 def download_image(url, folder_name, num):
     # write image to file
     response = requests.get(url)
@@ -111,7 +118,7 @@ def scrape_images(driver, folder_name, search_term, number_of_images, starting_n
 
 def main(class_name, model_name):
     # creating a directory to save images
-    paths = "./new_dataset"
+    paths = "../model/new_dataset"
     if not os.path.isdir(paths):
         os.makedirs(paths)
     folder_name = paths + "/user_images"
@@ -119,8 +126,11 @@ def main(class_name, model_name):
         os.makedirs(folder_name)
 
     chrome_options = Options()
-    chrome_options.add_argument("--window-size=1920,1200")
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    chrome_options.add_argument("--window-size=1920,1200")    
+    chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--no-sandbox')
+    
+    driver = webdriver.Chrome(service=ChromiumService(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()), options=chrome_options)#ChromeDriverManager().install()
 
     # scrape_images("검색어","찾을 개수","시작 인덱스")
     scrape_images(driver, folder_name, class_name + "+" + model_name, 5, 0)
@@ -130,12 +140,13 @@ def main(class_name, model_name):
 
 
 if __name__ == "__main__":
-    class_name = "mouse"
-    model_name = "A1657"
+    args = parse_args()
+    class_name = args.class_name #"mouse"
+    model_name = args.model_name #"A1657"
 
     main(class_name, model_name)
 
-    yaml_path = "./model/config.yaml"  # config 수정
+    yaml_path = "../model/config.yaml"  # config 수정
     config = load_config(yaml_path)
     config["class_name"] = class_name
     save_config(config, yaml_path)
