@@ -1,9 +1,9 @@
-class_name: speaker
-data_dir: /opt/ml/final_project/final-project-dataset-34/data.yaml
-dataset_version: 34
+class_name: mouse
+data_dir: /opt/ml/level3_cv_finalproject-cv-05/model/final-project-dataset-43/data.yaml
+dataset_version: 43
 model: yolov8s.pt
 model_version: 2
-new_image_path: ./new_dataset/rembg_user_images
-new_label_path: ./new_dataset/rembg_user_labels
+new_image_path: ../model/new_dataset/rembg_user_images
+new_label_path: ../model/new_dataset/rembg_user_labels
 project: final-project-dataset-r1wxc
 workspace: final-projectboostcamp-ai-tech
