@@ -16,7 +16,6 @@ from fastapi.responses import HTMLResponse
 from google.protobuf.json_format import MessageToJson
 from numpy.linalg import norm
 from ultralytics import YOLO
-import yaml
 
 def load_config(file_path):
     with open(file_path, 'r') as f:
@@ -25,23 +24,17 @@ def load_config(file_path):
 
 app = FastAPI()
 
+class_list = ["AC", "lamp", "laptop"]
+
 CONFIDENCE_THRESHOLD = 0.7
 # yolo load model
+model = YOLO("best.pt")
+
 @app.websocket("/bd")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     await websocket.send_text("WebSocket connection established")
-    config_path = '../model/config.yaml'
-    config = load_config(config_path)
-    data_config = load_config(config['data_dir'])
-    model_version = config['model_version']
-    if model_version==1:
-        model_version=""
-    else:
-        model_version=str(model_version)
-    model = YOLO("../model/runs/detect/train"+model_version+"/weights/best.pt")
-    class_list = data_config['names']
-    print(class_list)
+
     while True:
         data = await websocket.receive_text()
         # We are receiving the base64 image here, we will decode and process the image.
@@ -133,7 +126,7 @@ async def video_endpoint(websocket: WebSocket):
         9: "yeah",
         10: "ok",
     }
-    rps_gesture = {1: "point", 5: "on/off"}
+    rps_gesture = {0:'off',1: "point", 5: "on"}
 
     # MediaPipe hands model
     mp_hands = mp.solutions.hands
@@ -304,10 +297,10 @@ async def text_endpoint(websocket: WebSocket):
             class_name=data.split(" ")[0]
             model_name=data.split(" ")[1]
             print(class_name,model_name)
-            subprocess.run(["python","../model/data_collection.py","--class_name",class_name,"--model_name",model_name])
-            subprocess.run(["python","../model/mk_new_dataset.py"])
-            subprocess.run(["python","../model/train.py","--update","True"])
-            config_path = '../model/config.yaml'
+            subprocess.run(["python","data_collection.py","--class_name",class_name,"--model_name",model_name])
+            subprocess.run(["python","mk_new_dataset.py"])
+            subprocess.run("/opt/ml/final_project/update_train.sh",shell=True)
+            config_path = 'config.yaml'
             config = load_config(config_path)
             model_version = config['model_version']
             if model_version==1:
@@ -322,29 +315,133 @@ async def read_items():
     html_content = """
     <html>
     <head>
-        <title>Object Detection with FastAPI</title>
+        <title>Smarthome with Hand Gesture</title>
+        <style>
+            video{
+                transform: rotateY(180deg);
+                -webkit-transform:rotateY(180deg); /* Safari and Chrome */
+                -moz-transform:rotateY(180deg); /* Firefox */
+            }
+            canvas{
+                transform: rotateY(180deg);
+                -webkit-transform:rotateY(180deg); /* Safari and Chrome */
+                -moz-transform:rotateY(180deg); /* Firefox */
+            }
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 20px;
+            }
+            h1 {
+                text-align: center;
+                margin-bottom: 20px;
+            }
+            #video {
+                display: block;
+                margin: 0 auto;
+                border: 2px solid black;
+                margin-bottom: 20px;
+            }
+            .button-group {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+            .button-group button {
+                margin: 0 5px;
+                padding: 10px 20px;
+                font-size: 16px;
+                cursor: pointer;
+                background-color: #007BFF;
+                color: #fff;
+                border: none;
+                border-radius: 5px;
+            }
+            
+            #messageText {
+                display: block;
+                margin: 0 5;
+                padding: 5px 10px;
+                width: 300px;
+                font-size: 16px;
+                margin-bottom: 5px;
+            }
+            .textbutton-group {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+            .textbutton-group button {
+                display: flex;
+                margin: 0 5px;
+                padding: 10px 20px;
+                font-size: 16px;
+                cursor: pointer;
+                background-color: #007BFF;
+                color: #fff;
+                border: none;
+                border-radius: 5px;
+            }
+            #canvas {
+                display: block;
+                margin: 0 auto;
+                border: 2px solid black;
+                margin-bottom: 20px;
+            }
+            .handbutton-group {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+            .handbutton-group button {
+                margin: 0 5px;
+                padding: 10px 20px;
+                font-size: 16px;
+                cursor: pointer;
+                background-color: #007BFF;
+                color: #fff;
+                border: none;
+                border-radius: 5px;
+            }
+            button:disabled {
+                background-color: #d3d3d3;
+                cursor: not-allowed;
+            }
+        </style>
     </head>
     <body>
-        <h1>Object Detection with FastAPI</h1>
+        <h1>Smarthome with Hand Gesture</h1>
         <video id="video" width="640" height="480" autoplay></video>
-        <button id="startButton" onclick="startWebSocket()">Start WebSocket</button>
-        <button id="stopButton" onclick="stopWebSocket()" disabled>Stop WebSocket</button>
-        <button id="handstart" onclick="startHandRecognition()">Hand Start</button>
-        <button id="handstop" onclick="stopHandWebSocket()" disabled>Hand Stop</button>
+            <div class="button-group">
+                <button id="startButton" onclick="startWebSocket()">Start WebSocket</button>
+                <button id="stopButton" onclick="stopWebSocket()" disabled>Stop WebSocket</button>
+            </div>
+            
+            <div class="textbutton-group" style="margin-top: 10px;">
+                <input type="text" id="messageText" autocomplete="off" placeholder="제품명 모델명(동일 형식으로 입력해주세요)">
+                <button id="textButton" onclick="sendText()" style="margin-left: 10px;">Send Text</button>
+            </div>
         <canvas id="canvas" width="640" height="480"></canvas>
-        <input type="text" id="messageText" autocomplete="off"/>
-        <button onclick="sendText()">Send Text</button>
+            <div class="handbutton-group">
+                <button id="handstart" onclick="startHandRecognition()">Start Hand</button>
+                <button id="handstop" onclick="stopHandWebSocket()" disabled>Stop Hand</button>
+            </div>
+        
         
         
         <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.15.0"></script>
         <script>
+        
         var video = document.querySelector("#video");
         var canvas = document.querySelector("#canvas");
         var socket;
         var handSocket;
         var isWebSocketOpen = false;
         var isHandWebSocketOpen = false;
-        var nw = new WebSocket("ws://101.101.209.25:30003/ud");
+        var nw = new WebSocket("ws://118.67.143.219:30006/ud");
         
         function startWebSocket() {
             var constraints = { video: true };
@@ -352,12 +449,12 @@ async def read_items():
             navigator.mediaDevices.getUserMedia(constraints)
             .then(function (stream) {
                 video.srcObject = stream;
-                socket = new WebSocket("ws://101.101.209.25:30003/bd");
+                socket = new WebSocket("ws://118.67.143.219:30006/bd");
                 socket.addEventListener("open", function (event) {
                     isWebSocketOpen = true;
                     document.getElementById("startButton").disabled = true;
                     document.getElementById("stopButton").disabled = false;
-                    setInterval(sendImage, 500);
+                    setInterval(sendImage, 200);
                 });
                 socket.addEventListener("message", function (event) {
                     console.log("Message from server: ", event.data);
@@ -462,7 +559,7 @@ async def read_items():
                     isHandWebSocketOpen = true;
                     document.getElementById("handstart").disabled = true;
                     document.getElementById("handstop").disabled = false;
-                    setInterval(sendHandImage, 500);
+                    setInterval(sendHandImage, 200);
                 });
                 handSocket.addEventListener("message", function (event) {
                     console.log("hand gesture result: ", event.data);
@@ -499,22 +596,6 @@ async def read_items():
             }
         }
         
-        function displayFingerLandmarks(handData) {
-            var context = canvas.getContext("2d");
-
-            for (var i = 0; i < 21; i++) {
-                var hand = handData[i];
-                var x = hand.x;
-                var y = hand.y;
-                
-                // Draw landmark
-                context.beginPath();
-                context.fillStyle = 'blue';
-                context.arc((1-x)*canvas.width, y*canvas.height, 3, 0, 2 * Math.PI);
-                context.fill();
-            }
-        }
-
         function displayBBoxLines(bboxData, handData, idx) {
             var context = canvas.getContext("2d");
 
