@@ -26,8 +26,8 @@ def parse_args():
     args = parser.parse_args()
     return args
 
-config_path = 'config.yaml'
-secret_path = 'secret.yaml'
+config_path = '../model/config.yaml'
+secret_path = '../model/secret.yaml'
 config = load_config(config_path)
 secret = load_config(secret_path)
 
@@ -55,4 +55,4 @@ config['data_dir']=dataset.location+'/data.yaml'
 save_config(config, config_path)
 #train
 model = YOLO(config['model'])
-results= model.train(data=dataset.location+'/data.yaml',epochs=args.epochs,patience=args.patience, optimizer=args.opt, batch = args.batch,mosaic=args.mosaic)
+results= model.train(data=config['data_dir'],epochs=args.epochs,patience=args.patience, optimizer=args.opt, batch = args.batch,mosaic=args.mosaic)
