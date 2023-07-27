@@ -1,6 +1,9 @@
-dataset_version: 18
+class_name: speaker
+data_dir: /opt/ml/final_project/final-project-dataset-34/data.yaml
+dataset_version: 34
 model: yolov8s.pt
-new_image_path: new_image/images
-new_label_path: new_image/labels
+model_version: 2
+new_image_path: ./new_dataset/rembg_user_images
+new_label_path: ./new_dataset/rembg_user_labels
 project: final-project-dataset-r1wxc
 workspace: final-projectboostcamp-ai-tech
