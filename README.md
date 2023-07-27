@@ -1,13 +1,17 @@
-# level3_cv_finalproject-cv-05
-level3_cv_finalproject-cv-05 created by GitHub Classroom
+# 안녕하세요! 👨‍👨‍👦‍👦
 
-## pre-commit
-pip install pre-commit<br>
-git clone 진행한 directory로 이동<br>
-pre-commit install<br>
-코드 정상 실행된 경우 git add, commit, push 진행
+네이버 부스트캠프 AItech 5기 CV lv3 5조 Final프로젝트 공간입니다.
 
---------------
+<img src="https://i.ibb.co/tD3GMWq/2.png"><br /><br />
+
+
+
+## Contributors
+
+|강희성 |                                                  김영한|김정현 |                                                  오유림|주건재|
+|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+| [<img src="https://avatars.githubusercontent.com/u/90888774?v=4" alt="" style="width:100px;100px;">](https://github.com/atom1905h) <br/> | [<img src="https://avatars.githubusercontent.com/u/50921080?v=4" alt="" style="width:100px;100px;">](https://github.com/dkdlel6887) <br/> | [<img src="https://avatars.githubusercontent.com/u/114405449?v=4" alt="" style="width:100px;100px;">](https://github.com/Jhyuny) <br/>
+
 
 ## Commit Type
 - feat : 새로운 기능 추가, 기존의 기능을 요구 사항에 맞추어 수정
@@ -20,5 +24,4 @@ pre-commit install<br>
 - refactor : 기능의 변화가 아닌 코드 리팩터링 ex) 변수 이름 변경
 - test : 테스트 코드 추가/수정
 - release : 버전 릴리즈
-
 --------------
