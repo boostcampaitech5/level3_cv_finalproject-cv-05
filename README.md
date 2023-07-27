@@ -20,9 +20,13 @@ npm install my-crazy-module --save
 
 ## 사용 예제
 
-스크린 샷과 코드 예제를 통해 사용 방법을 자세히 설명합니다.
+체험하기 전에! 웹캠 보안 허용하기
 
-_더 많은 예제와 사용법은 [Wiki][wiki]를 참고하세요._
+1. chrome://flags/#unsafely-treat-insecure-origin-as-secure 접속
+2. Insecure origins treated 항목에 http://118.67.143.219:30006/ 기입
+3. disable -> enabled 로 변경
+
+<img src="[https://i.ibb.co/tD3GMWq/2.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/2aa5c431-b1ec-4dd5-a359-5b383ed865bb/Untitled.png)"><br /><br />
 
 ## 개발 환경 설정
 
