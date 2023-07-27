@@ -80,23 +80,30 @@ def save_config(config, yaml_path):
     with open(yaml_path, "w") as f:
         yaml.dump(config, f, default_flow_style=False)
 
+def make_dir(path):
+     if not os.path.exists(path):
+        os.mkdir(path)
 
 def main(removed):
     # path 정리
-    paths = "./new_dataset"  # 현재 경로에 new_dataset 디렉터리 추가
-    # if not os.path.exists(paths):
-    #     os.mkdir(paths)
+    paths = "../model/new_dataset"  # 현재 경로에 new_dataset 디렉터리 추가
+    make_dir(paths)
 
     uimg_path = paths + "/user_images"  # 사용자 물체 이미지 저장 경로
     rembg_path = paths + "/rembg_images"  # uimg에서 배경 제거한 이미지 저장 경로
     bg_path = paths + "/bg_images"  # 배경이미지 저장 경로
-
+    make_dir(uimg_path)
+    make_dir(rembg_path)
+    make_dir(bg_path)
     image_path = paths + "/bg_user_images"  # 새로운 이미지 저장할 디렉토리
     label_path = paths + "/bg_user_labels"  # 새로운 레이블 저장할 디렉토리
     rem_image_path = paths + "/rembg_user_images"  # 새로운 이미지 저장할 디렉토리
     rem_label_path = paths + "/rembg_user_labels"  # 새로운 레이블 저장할 디렉토리
-
-    yaml_path = "./model/config.yaml"  # config 수정
+    make_dir(image_path)
+    make_dir(label_path)
+    make_dir(rem_image_path)
+    make_dir(rem_label_path)
+    yaml_path = "../model/config.yaml"  # config 수정
     config = load_config(yaml_path)
     if removed:
         config["new_image_path"] = rem_image_path
@@ -122,5 +129,5 @@ def main(removed):
 
 
 if __name__ == "__main__":
-    removed = False  # True # False: 물체 배경유지  True: 물체 배경제거
+    removed = True  # True # False: 물체 배경유지  True: 물체 배경제거
     main(removed)

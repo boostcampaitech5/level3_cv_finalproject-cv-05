@@ -118,7 +118,7 @@ def scrape_images(driver, folder_name, search_term, number_of_images, starting_n
 
 def main(class_name, model_name):
     # creating a directory to save images
-    paths = "./new_dataset"
+    paths = "../model/new_dataset"
     if not os.path.isdir(paths):
         os.makedirs(paths)
     folder_name = paths + "/user_images"
@@ -145,7 +145,7 @@ if __name__ == "__main__":
 
     main(class_name, model_name)
 
-    yaml_path = "config.yaml"  # config 수정
+    yaml_path = "../model/config.yaml"  # config 수정
     config = load_config(yaml_path)
     config["class_name"] = class_name
     save_config(config, yaml_path)
