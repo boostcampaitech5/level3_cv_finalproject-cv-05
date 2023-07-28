@@ -16,6 +16,7 @@ from fastapi.responses import HTMLResponse
 from google.protobuf.json_format import MessageToJson
 from numpy.linalg import norm
 from ultralytics import YOLO
+import yaml
 
 def load_config(file_path):
     with open(file_path, 'r') as f:
@@ -24,17 +25,23 @@ def load_config(file_path):
 
 app = FastAPI()
 
-class_list = ["AC", "lamp", "laptop"]
-
 CONFIDENCE_THRESHOLD = 0.7
 # yolo load model
-model = YOLO("best.pt")
-
 @app.websocket("/bd")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     await websocket.send_text("WebSocket connection established")
-
+    config_path = '../model/config.yaml'
+    config = load_config(config_path)
+    data_config = load_config(config['data_dir'])
+    model_version = config['model_version']
+    if model_version==1:
+        model_version=""
+    else:
+        model_version=str(model_version)
+    model = YOLO("../model/runs/detect/train"+model_version+"/weights/best.pt")
+    class_list = data_config['names']
+    print(class_list)
     while True:
         data = await websocket.receive_text()
         # We are receiving the base64 image here, we will decode and process the image.
@@ -126,7 +133,7 @@ async def video_endpoint(websocket: WebSocket):
         9: "yeah",
         10: "ok",
     }
-    rps_gesture = {0:'off',1: "point", 5: "on"}
+    rps_gesture = {1: "point", 5: "on/off"}
 
     # MediaPipe hands model
     mp_hands = mp.solutions.hands
@@ -297,10 +304,10 @@ async def text_endpoint(websocket: WebSocket):
             class_name=data.split(" ")[0]
             model_name=data.split(" ")[1]
             print(class_name,model_name)
-            subprocess.run(["python","data_collection.py","--class_name",class_name,"--model_name",model_name])
-            subprocess.run(["python","mk_new_dataset.py"])
-            subprocess.run("/opt/ml/final_project/update_train.sh",shell=True)
-            config_path = 'config.yaml'
+            subprocess.run(["python","../model/data_collection.py","--class_name",class_name,"--model_name",model_name])
+            subprocess.run(["python","../model/mk_new_dataset.py"])
+            subprocess.run(["python","../model/train.py","--update","True"])
+            config_path = '../model/config.yaml'
             config = load_config(config_path)
             model_version = config['model_version']
             if model_version==1:
@@ -441,7 +448,7 @@ async def read_items():
         var handSocket;
         var isWebSocketOpen = false;
         var isHandWebSocketOpen = false;
-        var nw = new WebSocket("ws://118.67.143.219:30006/ud");
+        var nw = new WebSocket("ws://101.101.209.25:30003/ud");
         
         function startWebSocket() {
             var constraints = { video: true };
@@ -449,7 +456,7 @@ async def read_items():
             navigator.mediaDevices.getUserMedia(constraints)
             .then(function (stream) {
                 video.srcObject = stream;
-                socket = new WebSocket("ws://118.67.143.219:30006/bd");
+                socket = new WebSocket("ws://101.101.209.25:30003/bd");
                 socket.addEventListener("open", function (event) {
                     isWebSocketOpen = true;
                     document.getElementById("startButton").disabled = true;
