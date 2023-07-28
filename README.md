@@ -7,7 +7,7 @@
 
 프로젝트 소개
 
-<img src="https://i.ibb.co/tD3GMWq/2.png"><br /><br />
+<img src="https://i.ibb.co/tD3GMWq/2.png">
 
 
 ## 설치 방법
