@@ -1,8 +1,8 @@
 class_name: mouse
 data_dir: /opt/ml/level3_cv_finalproject-cv-05/model/final-project-dataset-48/data.yaml
-dataset_version: 48
+dataset_version: 49
 model: yolov8s.pt
-model_version: 2
+model_version: 1
 new_image_path: ../model/new_dataset/rembg_user_images
 new_label_path: ../model/new_dataset/rembg_user_labels
 project: final-project-dataset-r1wxc
