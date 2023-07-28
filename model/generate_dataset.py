@@ -9,22 +9,22 @@ def generate_dataset(project):
             # "bbnoise": { "percent": 50 },
             # "bbninety": { "clockwise": True, "counter-clockwise": False, "upside-down": False },
             # "bbrotate": { "degrees": 45 },
-            # "bbshear": { "horizontal": 45, "vertical": 45 },
+            "bbshear": { "horizontal": 10, "vertical": 10 },
             # "blur": { "pixels": 1.5 },
-            # "brightness": { "brighten": True, "darken": False, "percent": 91 },
+            "brightness": { "brighten": False, "darken": True, "percent": 35 },
             # "crop": { "min": 12, "max": 71 },
             # "cutout": { "count": 26, "percent": 71 },
             # "exposure": { "percent": 30 },
-            # "flip": { "horizontal": True, "vertical": False },
+            "flip": { "horizontal": True, "vertical": False },
             # "hue": { "degrees": 180 },
             # "image": { "versions": 32 },
-            # "mosaic": True,
+            "mosaic": True,
             # "ninety": { "clockwise": True, "counter-clockwise": False, "upside-down": False },
             # "noise": { "percent": 50 },
             # "rgrayscale": { "percent": 50 },
             # "rotate": { "degrees": 45 },
             # "saturation": { "percent": 50 },
-            # "shear": { "horizontal": 45, "vertical": 45 }
+            #"shear": { "horizontal": 10, "vertical": 10 }
         },
         "preprocessing": {
             "auto-orient": True,
@@ -33,7 +33,7 @@ def generate_dataset(project):
             # "grayscale": True,
             # "isolate": True,
             #"remap": { "4": "plant" },
-            "resize": { "width": 640, "height": 640, "format": "Stretch to" },
+            #"resize": { "width": 640, "height": 640, "format": "Stretch to" },
             # "static-crop": { "x_min": 10, "x_max": 90, "y_min": 10, "y_max": 90 },
             # "tile": { "rows": 2, "columns": 2 }
         
