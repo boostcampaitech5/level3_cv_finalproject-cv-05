@@ -1,0 +1,16 @@
+/model/gesture_train.csv
+/model/data_df.csv
+/model/secret.yaml
+/model/yolov8n.pt
+/model/yolov8s.pt
+/model/wandb
+/model/runs
+/model/__pycache__
+/model/final-project-dataset-47
+/model/final-project-dataset-48
+/model/new_dataset/bg_user_images
+/model/new_dataset/bg_user_labels
+/model/new_dataset/rembg_images
+/model/new_dataset/rembg_user_images
+/model/new_dataset/rembg_user_labels
+/model/new_dataset/user_images
