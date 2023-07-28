@@ -132,7 +132,7 @@ def main(class_name, model_name):
     driver = webdriver.Chrome(service=ChromiumService(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()), options=chrome_options)#ChromeDriverManager().install()
 
     # scrape_images("검색어","찾을 개수","시작 인덱스")
-    scrape_images(driver, folder_name, class_name + "+" + model_name, 5, 0)
+    scrape_images(driver, folder_name, class_name + "+" + model_name, 10, 0)
 
     time.sleep(10)
     driver.quit()
