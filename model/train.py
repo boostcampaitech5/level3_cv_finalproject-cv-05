@@ -21,7 +21,7 @@ def parse_args():
     parser.add_argument("--patience", type=int, default=150)
     parser.add_argument("--update",type=str, default="False")
     parser.add_argument("--opt",type=str, default='auto')
-    parser.add_argument("--batch",type=int, default=16)
+    parser.add_argument("--batch",type=int, default=64)
     parser.add_argument("--mosaic",type=float, default=1.0)
     args = parser.parse_args()
     return args
