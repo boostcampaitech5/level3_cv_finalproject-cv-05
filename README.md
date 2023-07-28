@@ -36,6 +36,8 @@ npm install my-crazy-module --save
 make install
 npm test
 ```
+## 프로세스
+<img src=https://github.com/boostcampaitech5/level3_cv_finalproject-cv-05/assets/90888774/07e83583-3eab-4c3e-88d0-4831ff9b00b0>
 
 ## Contributors
 
