@@ -36,6 +36,10 @@ npm install my-crazy-module --save
 make install
 npm test
 ```
+## 기능 설명
+입력 받은 영상 내 물체 인식 후 → 손동작으로 on/off 및 볼륨, 온도 수치 조절하기
+추가 하고 싶은 기기 등록 → 새로운 데이터셋 구축 및 모델 자동 학습 후 물체 인식하여 조작
+
 ## 프로세스
 <img src=https://github.com/boostcampaitech5/level3_cv_finalproject-cv-05/assets/90888774/07e83583-3eab-4c3e-88d0-4831ff9b00b0>
 
