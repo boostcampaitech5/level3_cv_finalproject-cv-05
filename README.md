@@ -13,18 +13,23 @@
 <br></br>
 
 # 프로젝트 소개
-- 제스처 인식을 통해 카메라 내의 기기를 조작합니다.
-  
+
+```sh
+ 제스처 인식을 통해 카메라 내의 기기를 조작합니다.
+```
 ![시연영상](https://github.com/boostcampaitech5/level3_cv_finalproject-cv-05/assets/90888774/a94d6e43-5736-4e04-a97b-f484e50fdf8b)
 
 ## 사용 방법
 
+```sh
 크롬 웹캠 보안 허용하기
 
 1. chrome://flags/#unsafely-treat-insecure-origin-as-secure 접속
 2. Insecure origins treated 항목에 (http://101.101.209.25:30003/) 기입  >>> uri 알맞게 변경
 3. disable -> enabled 로 변경
+```
 <img src="https://github.com/boostcampaitech5/level3_cv_finalproject-cv-05/assets/50921080/0fd95122-51a8-428c-803f-71c72cf506a1">
+
 
 ## 개발 환경 설정
 ```sh
@@ -45,12 +50,13 @@ python service.py  # ip 및 port 변경하여 실행하면 로컬에서 웹페�
 ```
 
 ## 기능 설명
+```sh
 입력 받은 영상 내 물체 인식 후 → 손동작으로 on/off 및 볼륨, 온도 수치 조절하기  
 추가 하고 싶은 기기 등록 → 새로운 데이터셋 구축 및 모델 자동 학습 후 물체 인식하여 조작
+```
 
 ## 프로세스
 <img src=https://github.com/boostcampaitech5/level3_cv_finalproject-cv-05/assets/90888774/07e83583-3eab-4c3e-88d0-4831ff9b00b0 width="700" height="300"/>
-
 
 ## 사용 기술
 <img src="https://github.com/boostcampaitech5/level3_cv_finalproject-cv-05/assets/50921080/a92371d6-8ffd-48e8-885a-959a8ad268a5" width="700" height="300"/>
@@ -58,9 +64,10 @@ python service.py  # ip 및 port 변경하여 실행하면 로컬에서 웹페�
 ## 사용 데이터셋
 <img src="https://github.com/boostcampaitech5/level3_cv_finalproject-cv-05/assets/50921080/d74cedf1-af1f-4191-84fd-28b7edd7e3bc" width="700" height="300"/>
 
+```sh
 - 모델 학습에 사용한 기본 데이터셋입니다. 가정에서 흔히 볼 수 있는 물체로 선택
-- 클래스 균형을 위해 각각 300장씩 모아 roboflow를 통해 annotation을 진행. 
-
+- 클래스 균형을 위해 각각 300장씩 모아 roboflow를 통해 annotation을 진행
+```
 ## 손동작 종류
 <img src="https://github.com/boostcampaitech5/level3_cv_finalproject-cv-05/assets/50921080/4459410a-d3f1-4906-bf5a-a89afbe73099" width="700" height="200"/>
 
@@ -70,6 +77,7 @@ python service.py  # ip 및 port 변경하여 실행하면 로컬에서 웹페�
 <a href="https://www.notion.so/boostcampait/CV-05-Smarthome-with-Hand-Gesture-70e4f7a5335847fcb380c66611f5e74d?pvs=4"><img src="https://img.shields.io/badge/Notion-000000?style=flat-squrare&logo=Notion"/></a>  
 
 ## Commit Type
+
 - feat : 새로운 기능 추가, 기존의 기능을 요구 사항에 맞추어 수정
 - fix : 기능에 대한 버그 수정
 - build : 빌드 관련 수정
