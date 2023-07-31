@@ -51,12 +51,12 @@ GREEN = (0, 255, 0)
 WHITE = (255, 255, 255)
 RED = (0, 0, 255)
 BLACK = (0,0,0)
-class_list=['AC','Window-blind','lamp','laptop']
+class_list=['AC','lamp','laptop']
 
 #yolo load model
 model = YOLO('best.pt')
 off_on = ['off','on']
-max_num_hands = 1
+max_num_hands = 2
 gesture = {
     0: "fist",
     1: "point",  # "one"
@@ -115,26 +115,7 @@ while True:
         results.append([xmin, ymin, xmax-xmin, ymax-ymin,xmin+int((xmax-xmin)/2),ymin+int((ymax-ymin)/2),confidence, class_list[label],0,0,0])
         data_df = pd.DataFrame(results, columns=['xmin','ymin','width','height','center_x','center_y','confidence','label','select','status','volume']) 
         data_df.to_csv('data_df.csv')
-    #tracks = tracker.update_tracks(results, frame=frame)
-
-    # for track in tracks:
-    #     if not track.is_confirmed():
-    #         continue
-
-    #     track_id = track.track_id
-    #     ltrb = track.to_ltrb()
-
-    #     xmin, ymin, xmax, ymax = int(ltrb[0]), int(ltrb[1]), int(ltrb[2]), int(ltrb[3])
-    #     cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), GREEN, 2)
-    #     cv2.rectangle(frame, (xmin, ymin - 20), (xmin + 20, ymin), GREEN, -1)
-    #     cv2.putText(frame, str(track_id), (xmin + 5, ymin - 8), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
-
-    # end = datetime.datetime.now()
-
-    # total = (end - start).total_seconds()
-    # # print(f'Time to process 1 frame: {total * 1000:.0f} milliseconds')
-    # fps = f'FPS: {1 / total:.2f}'
-    # cv2.putText(frame, fps, (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+    
     cv2.imshow('frame', frame)
     # if time.sleep(10):
     #     break  
@@ -163,8 +144,8 @@ while True:
     for i in range(len(data_df)):
         cv2.rectangle(frame, (data_df['xmin'][i], data_df['ymin'][i]), (data_df['xmin'][i]+data_df['width'][i], data_df['ymin'][i]+data_df['height'][i]), RED, 2)
         cv2.putText(frame, text=data_df['label'][i]+' '+off_on[data_df['status'][i]]+' volume: '+str(data_df['volume'][i]),org=(data_df['xmin'][i],data_df['center_y'][i]),fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-            fontScale=1,
-            color=BLACK,
+            fontScale=2,
+            color=(255,255,0),
             thickness=2,)
     if result.multi_hand_landmarks is not None:
         for res in result.multi_hand_landmarks:
