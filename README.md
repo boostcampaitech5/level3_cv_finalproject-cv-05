@@ -17,7 +17,7 @@
 ```sh
  제스처 인식을 통해 카메라 내의 기기를 조작합니다.
 ```
-![시연영상](https://github.com/boostcampaitech5/level3_cv_finalproject-cv-05/assets/90888774/a94d6e43-5736-4e04-a97b-f484e50fdf8b)
+![KakaoTalk_20230728_142923724](https://github.com/boostcampaitech5/level3_cv_finalproject-cv-05/assets/90888774/9a6a281c-9003-413d-8d70-987dbac6cc87)
 
 ## 사용 방법
 
@@ -28,7 +28,7 @@
 2. Insecure origins treated 항목에 (http://101.101.209.25:30003/) 기입  >>> uri 알맞게 변경
 3. disable -> enabled 로 변경
 ```
-<img src="https://github.com/boostcampaitech5/level3_cv_finalproject-cv-05/assets/50921080/0fd95122-51a8-428c-803f-71c72cf506a1">
+<img src="https://github.com/boostcampaitech5/level3_cv_finalproject-cv-05/assets/50921080/e4a4e54c-a6db-4133-b38b-7cddffab3442">
 
 
 ## 개발 환경 설정
@@ -56,20 +56,20 @@ python service.py  # ip 및 port 변경하여 실행하면 로컬에서 웹페�
 ```
 
 ## 프로세스
-<img src=https://github.com/boostcampaitech5/level3_cv_finalproject-cv-05/assets/90888774/07e83583-3eab-4c3e-88d0-4831ff9b00b0 width="700" height="300"/>
+<img src=https://github.com/boostcampaitech5/level3_cv_finalproject-cv-05/assets/50921080/d3cc5bb5-37e8-4fa8-aa50-266378c765d3 width="700" height="300"/>
 
 ## 사용 기술
-<img src="https://github.com/boostcampaitech5/level3_cv_finalproject-cv-05/assets/50921080/a92371d6-8ffd-48e8-885a-959a8ad268a5" width="700" height="300"/>
+<img src="https://github.com/boostcampaitech5/level3_cv_finalproject-cv-05/assets/50921080/859675d0-b1db-4374-8e8d-144878d2667a" width="700" height="300"/>
 
 ## 사용 데이터셋
-<img src="https://github.com/boostcampaitech5/level3_cv_finalproject-cv-05/assets/50921080/d74cedf1-af1f-4191-84fd-28b7edd7e3bc" width="700" height="300"/>
+<img src="https://github.com/boostcampaitech5/level3_cv_finalproject-cv-05/assets/50921080/4868cbc1-07b3-4529-8a83-c989f7417e49" width="700" height="300"/>
 
 ```sh
 - 모델 학습에 사용한 기본 데이터셋입니다. 가정에서 흔히 볼 수 있는 물체로 선택
 - 클래스 균형을 위해 각각 300장씩 모아 roboflow를 통해 annotation을 진행
 ```
 ## 손동작 종류
-<img src="https://github.com/boostcampaitech5/level3_cv_finalproject-cv-05/assets/50921080/4459410a-d3f1-4906-bf5a-a89afbe73099" width="700" height="200"/>
+<img src="https://github.com/boostcampaitech5/level3_cv_finalproject-cv-05/assets/50921080/fc17c947-6dc9-40fc-aa50-47df74205740" width="700" height="200"/>
 
 ## 참고 링크
 <a href="https://youtu.be/YDPDhL6tOs0"><img src="https://img.shields.io/badge/Presentation(Video)-000000?style=flat-square&logo=youtube&logoColor=fc2403"/></a>  
