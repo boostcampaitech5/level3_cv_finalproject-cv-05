@@ -144,7 +144,7 @@ while True:
     for i in range(len(data_df)):
         cv2.rectangle(frame, (data_df['xmin'][i], data_df['ymin'][i]), (data_df['xmin'][i]+data_df['width'][i], data_df['ymin'][i]+data_df['height'][i]), RED, 2)
         cv2.putText(frame, text=data_df['label'][i]+' '+off_on[data_df['status'][i]]+' volume: '+str(data_df['volume'][i]),org=(data_df['xmin'][i],data_df['center_y'][i]),fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-            fontScale=2,
+            fontScale=1,
             color=(255,255,0),
             thickness=2,)
     if result.multi_hand_landmarks is not None:
